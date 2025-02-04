@@ -12,7 +12,6 @@ public class StaffData : ScriptableObject
 [Serializable]
 public struct PositonKeyDataPair
 {
-    public int PositionInStaff;
     public KeyData[] PossibleKeyData;
 }
 
