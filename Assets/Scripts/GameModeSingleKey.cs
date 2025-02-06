@@ -19,7 +19,7 @@ public class GameModeSingleKey : MonoBehaviour
     private void StartGame()
     {
         _timer.AddListenerToOnTimerEnd(OnTimerEndCallback);
-        _timer.StartTimer(2f);
+        _timer.StartTimer(5f);
         ClearPositionAndPromptKey();
     }
 
@@ -32,7 +32,7 @@ public class GameModeSingleKey : MonoBehaviour
 
     private void OnTimerEndCallback()
     {
-        _timer.StartTimer(2f);
+        _timer.StartTimer(5f);
         ClearPositionAndPromptKey();
     }
 

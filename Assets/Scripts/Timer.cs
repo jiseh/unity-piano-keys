@@ -8,8 +8,11 @@ public class Timer : MonoBehaviour
     [Header("Debugging")]
     [SerializeField] private bool _timeLogging;
 
+    private UnityEvent<float> OnTimerStart = new();
+    private UnityEvent<float, float> OnTimerUpdate = new();
     private UnityEvent OnTimerEnd = new();
     private float _currentTime;
+    private float _maxTime;
     private bool _timerActive;
 
     private void Update()
@@ -27,9 +30,11 @@ public class Timer : MonoBehaviour
                 Debug.LogWarning($"StartTimer aborted, parameters was not set to override timer in progress");
                 return;
             }
-        } 
+        }
         _currentTime = duration;
+        _maxTime = duration;    
         _timerActive = true;
+        OnTimerStart?.Invoke(duration);
     }
 
     public void ToggleTimer(bool value)
@@ -47,6 +52,26 @@ public class Timer : MonoBehaviour
         _timerActive = false;
     }
 
+    public void AddListenerToOnTimerStart(UnityAction<float> unityAction)
+    {
+        OnTimerStart.AddListener(unityAction);
+    }
+
+    public void RemoveListenerToOnTimerStart(UnityAction<float> unityAction)
+    {
+        OnTimerStart.RemoveListener(unityAction);
+    }
+
+    public void AddListenerToOnTimerUpdate(UnityAction<float, float> unityAction)
+    {
+        OnTimerUpdate.AddListener(unityAction);
+    }
+
+    public void RemoveListenerToOnTimerUpdate(UnityAction<float, float> unityAction)
+    {
+        OnTimerUpdate.RemoveListener(unityAction);
+    }
+
     public void AddListenerToOnTimerEnd(UnityAction unityAction)
     {
         OnTimerEnd.AddListener(unityAction);
@@ -57,11 +82,22 @@ public class Timer : MonoBehaviour
         OnTimerEnd.RemoveListener(unityAction);
     }
 
+    public float GetCurrentTimePrecise()
+    {
+        return _currentTime;
+    }
+
+    public float GetCurrentTimeRounded()
+    {
+        return Mathf.Round(_currentTime);
+    }
+
     private void HandleTimer()  
     {
         if (!_timerActive)
             return;
         _currentTime -= Time.deltaTime;
+        OnTimerUpdate?.Invoke(_currentTime, _maxTime);
         TryLoggingCurrentTime();
         if (_currentTime <= 0)
         {
