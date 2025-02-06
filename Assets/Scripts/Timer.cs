@@ -32,6 +32,21 @@ public class Timer : MonoBehaviour
         _timerActive = true;
     }
 
+    public void ToggleTimer(bool value)
+    {
+        _timerActive = value;
+    }
+
+    public void PlayTimer()
+    {
+        _timerActive = true;
+    }
+
+    public void PauseTimer()
+    {
+        _timerActive = false;
+    }
+
     public void AddListenerToOnTimerEnd(UnityAction unityAction)
     {
         OnTimerEnd.AddListener(unityAction);
