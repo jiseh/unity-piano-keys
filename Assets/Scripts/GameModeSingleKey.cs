@@ -4,10 +4,34 @@ using UnityEngine;
 
 public class GameModeSingleKey : MonoBehaviour
 {
+    [SerializeField] private GameInputManager _gameInputManager;
     [SerializeField] private StaffData _staffData;
     [SerializeField] private NoteSkeleton _noteSkeleton;
     [SerializeField] private Timer _timer;
     [SerializeField] private Transform[] _positions;
+
+    private KeyData _queuedKeyData;
+
+    private void Awake()
+    {
+        _gameInputManager.OnPianoButtonClicked.AddListener(OnPianoButtonClickedCallback);
+    }
+
+    private void OnDestroy()
+    {
+        _gameInputManager.OnPianoButtonClicked.RemoveListener(OnPianoButtonClickedCallback);
+    }
+
+    private void OnPianoButtonClickedCallback(KeyData[] keyDatas)
+    {
+        if (_queuedKeyData == null)
+            return;
+        foreach (KeyData keyData in keyDatas)
+        {
+            if (keyData == _queuedKeyData)
+                Debug.Log($"Match! {keyData}");
+        }
+    }
 
     private void Update()
     {
@@ -45,11 +69,13 @@ public class GameModeSingleKey : MonoBehaviour
     private void PromptKeyInRandomPosition()
     {
         int index = _staffData.GetRandomPairIndex();
+        index = UnityEngine.Random.Range(0, 4);
         PositonKeyDataPair pair = _staffData.GetStaffData(index);
         KeyData keyData = pair.GetRandomKeyData();
 
         NoteSkeleton newNote = Instantiate(_noteSkeleton, _positions[index]);
         newNote.SetAccidental(keyData.Type);
+        _queuedKeyData = keyData;
     }
 
     private void ClearPositions()
